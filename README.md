@@ -4,8 +4,8 @@ A Vim plugin for [TidalCycles](http://tidal.lurk.org/), the language for live
 coding musical patterns written in Haskell.
 
 This plugin uses Vim channels and jobs to communicate with the Tidal
-interpreter.  Therefore, **Vim 8+ is required**. For Vim 7 or older, use
-[vim-tidal](https://github.com/munshkr/vim-tidal) instead.
+interpreter, so you need either Vim 7.4+ with `+channel` and `+job` or Neovim.
+Otherwise, use [vim-tidal](https://github.com/munshkr/vim-tidal) instead.
 
 ## Getting Started ##
 
