@@ -1,5 +1,7 @@
 # vim-tidal-re #
 
+**work in progress...**
+
 A Vim plugin for [TidalCycles](http://tidal.lurk.org/), the language for live
 coding musical patterns written in Haskell.
 
@@ -33,4 +35,4 @@ conduct.
 
 ## License
 
-Refer to the [LICENSE](LICENSE) file
+Refer to the [LICENSE](LICENSE) file.
