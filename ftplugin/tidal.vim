@@ -1,3 +1,7 @@
+if !has('channel') || !has('job')
+  echoerr "+channel or +job features are missing! vim-tidal-re won't work here :("
+endif
+
 if !exists("g:tidal_repl")
   " In case of using a symlink but resources are in the same directory as the
   " actual script, do this:
