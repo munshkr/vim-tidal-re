@@ -23,6 +23,18 @@ if !exists("g:tidal_flash_duration")
 end
 
 nnoremap <buffer> <localleader>b :call tidal#Start()<cr>
-nnoremap <buffer> <localleader>s :call tidal#EvalParagraph()<cr>
+nnoremap <buffer> <localleader>q :call tidal#Stop()<cr>
+
+nnoremap <buffer> <localleader>ss :call tidal#EvalParagraph()<cr>
 nnoremap <buffer> <c-e> :call tidal#EvalParagraph()<cr>
+
 nnoremap <buffer> <localleader>h :call tidal#Hush()<cr>
+nnoremap <buffer> <c-h> :call tidal#Hush()<cr>
+
+let i = 1
+while i <= 9
+  execute 'nnoremap <buffer> <localleader>'.i.'  :call tidal#Silence('.i.')<cr>'
+  execute 'nnoremap <buffer> <c-'.i.'>  :call tidal#Silence('.i.')<cr>'
+  execute 'nnoremap <buffer> <localleader>s'.i.' :call tidal#Play('.i.')<cr>'
+  let i += 1
+endwhile

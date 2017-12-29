@@ -176,6 +176,19 @@ function! tidal#EvalParagraph()
   call s:RestoreCurPos()
 endfunction
 
+function! tidal#Silence(n)
+  call tidal#Eval("d" . a:n . " silence")
+endfunction
+
+function! tidal#Play(n)
+  let res = search('^\s*d' . a:n)
+  if res > 0
+    call tidal#EvalParagraph()
+  else
+    echo "d" . a:stream . " was not found"
+  endif
+endfunction
+
 function! tidal#Hush()
   if exists("g:tidal_job")
     call tidal#Eval("hush")
