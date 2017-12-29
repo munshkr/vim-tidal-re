@@ -14,4 +14,15 @@ if !exists("g:tidal_repl")
   let g:tidal_repl = get(g:, 'tidal_repl', s:bin_path . "/tidal")
 endif
 
+if !exists("g:tidal_preserve_curpos")
+  let g:tidal_preserve_curpos = 1
+endif
+
+if !exists("g:tidal_flash_duration")
+  let g:tidal_flash_duration = 150
+end
+
 nnoremap <buffer> <localleader>b :call tidal#Start()<cr>
+nnoremap <buffer> <localleader>s :call tidal#EvalParagraph()<cr>
+nnoremap <buffer> <c-e> :call tidal#EvalParagraph()<cr>
+nnoremap <buffer> <localleader>h :call tidal#Hush()<cr>
