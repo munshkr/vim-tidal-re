@@ -1,6 +1,7 @@
-if !has('channel') || !has('job')
-  echoerr "+channel or +job features are missing! vim-tidal-re won't work here :("
-endif
+" FIXME Add check for neovim support
+"if !has('channel') || !has('job')
+"  echoerr "+channel or +job features are missing! vim-tidal-re won't work here :("
+"endif
 
 """ Global variables
 
@@ -27,24 +28,24 @@ end
 """ Bindings
 
 if !exists("g:tidal_no_mappings") || !g:tidal_no_mappings
-  nnoremap <buffer> <localleader>b :call tidal#Start()<cr>
-  nnoremap <buffer> <localleader>q :call tidal#Stop()<cr>
+  nnoremap <buffer> <localleader>b :call tidal#plugin#Start()<cr>
+  nnoremap <buffer> <localleader>q :call tidal#plugin#Stop()<cr>
 
-  nnoremap <buffer> <localleader>ee :call tidal#EvalParagraph()<cr>
-  nnoremap <buffer> <c-e> :call tidal#EvalParagraph()<cr>
-  inoremap <buffer> <c-e> <esc>:call tidal#EvalParagraph()<cr><right>i
-  xnoremap <buffer> <localleader>e :call tidal#EvalSelection()<cr>
-  xnoremap <buffer> <c-e> :call tidal#EvalSelection()<cr>
+  nnoremap <buffer> <localleader>ee :call tidal#plugin#EvalParagraph()<cr>
+  nnoremap <buffer> <c-e> :call tidal#plugin#EvalParagraph()<cr>
+  inoremap <buffer> <c-e> <esc>:call tidal#plugin#EvalParagraph()<cr><right>i
+  xnoremap <buffer> <localleader>e :call tidal#plugin#EvalSelection()<cr>
+  xnoremap <buffer> <c-e> :call tidal#plugin#EvalSelection()<cr>
 
-  nnoremap <buffer> <localleader>h :call tidal#Hush()<cr>
-  nnoremap <buffer> <c-h> :call tidal#Hush()<cr>
-  inoremap <buffer> <c-h> <esc>:call tidal#Hush()<cr><right>i
+  nnoremap <buffer> <localleader>h :call tidal#plugin#Hush()<cr>
+  nnoremap <buffer> <c-h> :call tidal#plugin#Hush()<cr>
+  inoremap <buffer> <c-h> <esc>:call tidal#plugin#Hush()<cr><right>i
 
   let i = 1
   while i <= 9
-    execute 'nnoremap <buffer> <localleader>'.i.'  :call tidal#Silence('.i.')<cr>'
-    execute 'nnoremap <buffer> <c-'.i.'>  :call tidal#Silence('.i.')<cr>'
-    execute 'nnoremap <buffer> <localleader>e'.i.' :call tidal#Play('.i.')<cr>'
+    execute 'nnoremap <buffer> <localleader>'.i.'  :call tidal#plugin#Silence('.i.')<cr>'
+    execute 'nnoremap <buffer> <c-'.i.'>  :call tidal#plugin#Silence('.i.')<cr>'
+    execute 'nnoremap <buffer> <localleader>e'.i.' :call tidal#plugin#Play('.i.')<cr>'
     let i += 1
   endwhile
 endif

@@ -21,6 +21,8 @@ let s:cycle_position_defs = [
   \"let fadeIn n = spread' (_degradeBy) (retrig $ slow n $ (1-) <$> envL)"
 \]
 
+let s:tidal_repl_buffer = 'tidal_repl_buffer'
+
 """ Helpers
 
 function! s:StoreCurPos()
@@ -106,111 +108,130 @@ function! s:Unlines(lines)
 endfunction
 
 function! s:EscapeText(text)
-    let l:text  = s:RemoveBlockComments(a:text)
-    let l:lines = s:Lines(s:TabToSpaces(l:text))
-    let l:lines = s:RemoveLineComments(l:lines)
-    let l:lines = s:WrapIfMulti(l:lines)
-    let l:lines = s:AddCyclePosDefs(l:lines)
-    let l:result  = s:Unlines(l:lines)
+  let l:text  = s:RemoveBlockComments(a:text)
+  let l:lines = s:Lines(s:TabToSpaces(l:text))
+  let l:lines = s:RemoveLineComments(l:lines)
+  let l:lines = s:WrapIfMulti(l:lines)
+  let l:lines = s:AddCyclePosDefs(l:lines)
+  let l:result  = s:Unlines(l:lines)
 
-    " return an array, regardless
-    if type(l:result) == type("")
-      return [l:result]
-    else
-      return l:result
-    end
+  " return an array, regardless
+  if type(l:result) == type("")
+    return [l:result]
+  else
+    return l:result
+  end
+endfunction
+
+function! s:Truncate(string, num)
+  let letters = split(a:string, '\zs')
+  return join(letters[:a:num], "")
 endfunction
 
 """ Main Functions
 
-function! tidal#OutHandler(channel, msg)
-  echohl WarningMsg
-  echom a:msg
-  echohl None
+let g:tidal_out_buffer = []
+
+function! tidal#plugin#OutHandler(_job_id, data, event) dict
+  " Do nothing
 endfunction
 
-function! tidal#ErrHandler(channel, msg)
+function! tidal#plugin#ErrHandler(_job_id, data, event)
   echohl ErrorMsg
-  echom a:msg
+  for line in a:data
+    echo line
+  endfor
   echohl None
 endfunction
 
-function! tidal#Start()
-  echom "Starting TidalCycles..."
-  let g:tidal_job = job_start(g:tidal_repl, {"mode": "nl",
-    \                                        "out_cb": "tidal#OutHandler",
-    \                                        "err_cb": "tidal#ErrHandler"})
+function! tidal#plugin#Start()
+  if exists("g:tidal_job") && g:tidal_job > 0
+    echo 'TidalCycles already started.'
+  else
+    let g:tidal_job = tidal#job#start([g:tidal_repl], {
+      \'on_stdout': function('tidal#plugin#OutHandler'),
+      \'on_stderr': function('tidal#plugin#ErrHandler'),
+    \})
+    if g:tidal_job > 0
+      echom 'TidalCycles started.'
+    else
+      echom 'TidalCycles failed to start.'
+    endif
+  endif
 endfunction
 
-function! tidal#Stop()
+function! tidal#plugin#Stop()
   if exists("g:tidal_job")
-    call job_stop(g:tidal_job)
+    call tidal#job#stop(g:tidal_job)
     unlet g:tidal_job
     echom "TidalCycles stopped."
   else
-    echom "TidalCycles is not running."
+    echo "TidalCycles is not running."
   endif
 endfunction
 
-function! tidal#Eval(message)
+function! tidal#plugin#Eval(message)
   if !exists("g:tidal_job")
-    call tidal#Start()
+    call tidal#plugin#Start()
   endif
+
+  let trunc_msg = s:Truncate(a:message, 20)
+  echo trunc_msg
 
   let l:lines = s:EscapeText(a:message)
   for line in l:lines
-    call ch_sendraw(g:tidal_job, line . "\n")
+    call tidal#job#send(g:tidal_job, line . "\n")
   endfor
 endfunction
 
-function! tidal#EvalSimple(message)
+function! tidal#plugin#EvalSimple(message)
   if !exists("g:tidal_job")
-    call tidal#Start()
+    call tidal#plugin#Start()
   endif
 
   echom a:message
-  call ch_sendraw(g:tidal_job, a:message . "\n")
+  call tidal#job#send(g:tidal_job, a:message . "\n")
 endfunction
 
-function! tidal#EvalParagraph()
+function! tidal#plugin#EvalParagraph()
   call s:StoreCurPos()
 
   silent execute "normal! vipy<cr>"
   let l:content = getreg('')
-  call tidal#Eval(l:content)
+  call tidal#plugin#Eval(l:content)
 
   silent execute "normal! '[V']"
   call s:FlashVisualSelection(l:content)
   call s:RestoreCurPos()
 endfunction
 
-function! tidal#EvalSelection() range
+function! tidal#plugin#EvalSelection() range
   silent execute a:firstline . ',' . a:lastline . 'yank'
   let l:content = getreg('')
-  call tidal#Eval(l:content)
+  call tidal#plugin#Eval(l:content)
 endfunction
 
-function! tidal#Silence(n)
+function! tidal#plugin#Silence(n)
   if exists("g:tidal_job")
-    call tidal#EvalSimple("d" . a:n . " silence")
+    call tidal#plugin#EvalSimple("d" . a:n . " silence")
   else
-    echom "TidalCycles is not running."
+    echo "TidalCycles is not running."
   endif
 endfunction
 
-function! tidal#Play(n)
+function! tidal#plugin#Play(n)
   let res = search('^\s*d' . a:n)
   if res > 0
-    call tidal#EvalParagraph()
+    call tidal#plugin#EvalParagraph()
   else
     echo "d" . a:stream . " was not found"
   endif
 endfunction
 
-function! tidal#Hush()
+function! tidal#plugin#Hush()
   if exists("g:tidal_job")
-    call tidal#EvalSimple("hush")
+    call tidal#plugin#EvalSimple("hush")
   else
-    echom "TidalCycles is not running."
+    echo "TidalCycles is not running."
   endif
 endfunction
