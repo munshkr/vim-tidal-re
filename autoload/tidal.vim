@@ -164,6 +164,15 @@ function! tidal#Eval(message)
   endfor
 endfunction
 
+function! tidal#EvalSimple(message)
+  if !exists("g:tidal_job")
+    call tidal#Start()
+  endif
+
+  echom a:message
+  call ch_sendraw(g:tidal_job, a:message . "\n")
+endfunction
+
 function! tidal#EvalParagraph()
   call s:StoreCurPos()
 
@@ -177,7 +186,7 @@ function! tidal#EvalParagraph()
 endfunction
 
 function! tidal#Silence(n)
-  call tidal#Eval("d" . a:n . " silence")
+  call tidal#EvalSimple("d" . a:n . " silence")
 endfunction
 
 function! tidal#Play(n)
@@ -191,7 +200,7 @@ endfunction
 
 function! tidal#Hush()
   if exists("g:tidal_job")
-    call tidal#Eval("hush")
+    call tidal#EvalSimple("hush")
   else
     echom "TidalCycles is not running."
   endif
