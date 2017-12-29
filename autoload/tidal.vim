@@ -159,7 +159,6 @@ function! tidal#Eval(message)
 
   let l:lines = s:EscapeText(a:message)
   for line in l:lines
-    echom line
     call ch_sendraw(g:tidal_job, line . "\n")
   endfor
 endfunction
@@ -183,6 +182,12 @@ function! tidal#EvalParagraph()
   silent execute "normal! '[V']"
   call s:FlashVisualSelection(l:content)
   call s:RestoreCurPos()
+endfunction
+
+function! tidal#EvalSelection() range
+  silent execute a:firstline . ',' . a:lastline . 'yank'
+  let l:content = getreg('')
+  call tidal#Eval(l:content)
 endfunction
 
 function! tidal#Silence(n)

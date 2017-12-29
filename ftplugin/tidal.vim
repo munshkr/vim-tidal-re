@@ -33,6 +33,8 @@ if !exists("g:tidal_no_mappings") || !g:tidal_no_mappings
   nnoremap <buffer> <localleader>ee :call tidal#EvalParagraph()<cr>
   nnoremap <buffer> <c-e> :call tidal#EvalParagraph()<cr>
   inoremap <buffer> <c-e> <esc>:call tidal#EvalParagraph()<cr><right>i
+  xnoremap <buffer> <localleader>e :call tidal#EvalSelection()<cr>
+  xnoremap <buffer> <c-e> :call tidal#EvalSelection()<cr>
 
   nnoremap <buffer> <localleader>h :call tidal#Hush()<cr>
   nnoremap <buffer> <c-h> :call tidal#Hush()<cr>
