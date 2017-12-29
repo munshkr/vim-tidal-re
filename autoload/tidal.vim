@@ -186,7 +186,11 @@ function! tidal#EvalParagraph()
 endfunction
 
 function! tidal#Silence(n)
-  call tidal#EvalSimple("d" . a:n . " silence")
+  if exists("g:tidal_job")
+    call tidal#EvalSimple("d" . a:n . " silence")
+  else
+    echom "TidalCycles is not running."
+  endif
 endfunction
 
 function! tidal#Play(n)
