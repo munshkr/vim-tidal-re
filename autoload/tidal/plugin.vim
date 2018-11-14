@@ -13,14 +13,6 @@ let s:not_prefixable_keywords = [
   \"type"
 \]
 
-let s:cycle_position_defs = [
-  \"now' <- getNow",
-  \"let now = nextSam now'",
-  \"let retrig = (now `rotR`)",
-  \"let fadeOut n = spread' (_degradeBy) (retrig $ slow n $ envL)",
-  \"let fadeIn n = spread' (_degradeBy) (retrig $ slow n $ (1-) <$> envL)"
-\]
-
 let s:tidal_repl_buffer = 'tidal_repl_buffer'
 
 """ Helpers
@@ -93,10 +85,6 @@ function! s:WrapIfMulti(lines)
   endif
 endfunction
 
-function! s:AddCyclePosDefs(lines)
-  return s:cycle_position_defs + a:lines
-endfunction
-
 " Change string into array of lines
 function! s:Lines(text)
   return split(a:text, "\n")
@@ -112,7 +100,6 @@ function! s:EscapeText(text)
   let l:lines = s:Lines(s:TabToSpaces(l:text))
   let l:lines = s:RemoveLineComments(l:lines)
   let l:lines = s:WrapIfMulti(l:lines)
-  let l:lines = s:AddCyclePosDefs(l:lines)
   let l:result  = s:Unlines(l:lines)
 
   " return an array, regardless
